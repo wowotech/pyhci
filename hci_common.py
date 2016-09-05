@@ -1,3 +1,7 @@
+#
+# www.wowotech.net
+#
+
 from construct import *
 
 param_len = OneOf(Byte("param_len"), range(256))
