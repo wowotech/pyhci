@@ -28,8 +28,14 @@ def parse_from_stdin():
 		if not line:
 			break
 
-		ret = parse_str(line)
-		print(ret)
+		try:
+			ret = parse_str(line)
+			print(ret)
+		except MappingError:
+			print('Error: not found')
+		except TypeError:
+			print('Error: invalid input')
+
 		sys.stdout.flush()
 
 def parse_from_file(filename, mode):
