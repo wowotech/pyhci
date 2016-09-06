@@ -11,16 +11,16 @@ Other, TODO.<br>
 Usage
 --------------
 
-1. Prepare<br>
-    Install python-pip:<br>
+1) Prepare<br>
+Install python-pip:<br>
 ```Bash
 sudo apt-get install python-pip
 ```
-    Install python construct:<br>
+Install python construct:<br>
 ```Bash
 pip install construct
 ```
-2. Parse HCI command/event from stdin<br>
+2) Parse HCI command/event from stdin<br>
 ```Bash
 $ python main.py parse s
 > 01 00 00 00
@@ -33,7 +33,7 @@ Container:
 Error: not found
 >
 ```
-3. others, todo<br>
+3) others, todo<br>
 
 Contact us
 --------------
