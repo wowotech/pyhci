@@ -10,10 +10,16 @@ from hci_common import *
 from hci_cmd import *
 from hci_pkt import *
 
-# some test code
-# cmd = cmd_container('reset')
-# ret = build(cmd)
-# print(ret.encode('hex'))
+def test_code():
+	cmd = reset_cmd_container()
+	ret = build(cmd)
+	print('reset')
+	print(ret.encode('hex'))
+
+	cmd = inquiry_cmd_container(0x123456, 0x7, 0x8)
+	ret = build(cmd)
+	print('inquiry')
+	print(ret.encode('hex'))
 
 def parse_from_stdin():
 	while 1:
@@ -48,6 +54,7 @@ def main(argv):
 		print('    %s parse s, parse from stdin in string format' % argv[0])
 		print('    %s parse s [filename], parse from file in string format' % argv[0])
 		print('    %s parse b [filename], parse from file in binary format' % argv[0])
+		test_code()
 		return
 
 	if (argv[1] == 'parse'):

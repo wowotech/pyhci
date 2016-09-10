@@ -21,15 +21,6 @@ hci_pkt_struct = Struct("hci_pkt",
 	)
 )
 
-
-def cmd_container(opcode, cmd_params=[]):
-	return Container(
-			pkt_type = 'command',
-			cmd_opcode = opcode,
-			param_len = len(cmd_params),
-			cmd_params = cmd_params,
-		)
-
 def build(input):
 	return hci_pkt_struct.build(input)
 
