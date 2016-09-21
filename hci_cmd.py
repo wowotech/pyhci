@@ -23,6 +23,7 @@ cmd_opcode = Enum(ULInt16('cmd_opcode'),
 
 	# LE Controller Commands
 	le_set_scan_parameters		= opcode_encode(0x08, 0x000b),
+	le_set_advertising_parameters	= opcode_encode(0x08, 0x0006),
 )
 
 # common command builder.
@@ -75,29 +76,35 @@ def reset_cmd_container():
 #
 # LE set scan parameters command.
 #
-le_scan_type = Enum(Byte('scan_type'),
-	without_scan_req = 0x00,
-	with_scan_req = 0x01,
-)
-
-own_address_type = Enum(Byte('own_address_type'),
-	public = 0x00,
-	random = 0x01,
-	private_or_public = 0x02,
-	private_or_random = 0x03,
-)
-
 le_set_scan_parameters_cmd_params_struct = Struct('le_set_scan_parameters_cmd',
 	le_scan_type,
 	OneOf(ULInt16('scan_interval'), range(0x0004, 0x40001)),
 	OneOf(ULInt16('scan_window'), range(0x0004, 0x40001)),
-	own_address_type,
+	le_own_address_type,
 	OneOf(Byte('scanning_filter_policy'), range(0x0, 0x5)),
 )
 #
 # LE set scan parameters command End.
 #
 
+#
+# LE set advertising parameters command.
+#
+# eg. 01 06 20 0f 40 06 80 07 05 00 00 00 00 00 00 00 00 07 00
+#
+le_set_advertising_parameters_cmd_params_struct = Struct('le_set_advertising_parameters_cmd',
+	OneOf(ULInt16('advertising_interval_min'), range(0x0020, 0x40001)),
+	OneOf(ULInt16('advertising_interval_max'), range(0x0020, 0x40001)),
+	le_advertising_type,
+	le_own_address_type,
+	le_peer_address_type,
+	Array(6, Byte('peer_address')),
+	OneOf(Byte('advertising_channel_map'), range(256)),
+	OneOf(Byte('advertising_filter_policy'), range(0x0, 0x4)),
+)
+#
+# LE set advertising parameters command End.
+#
 
 hci_cmd_struct = Struct('hci_cmd',
 	cmd_opcode,
@@ -106,6 +113,7 @@ hci_cmd_struct = Struct('hci_cmd',
 		{
 			'inquiry': inquiry_cmd_params_struct,
 			'le_set_scan_parameters': le_set_scan_parameters_cmd_params_struct,
+			'le_set_advertising_parameters': le_set_advertising_parameters_cmd_params_struct,
 		},
 		default = Array(lambda ctx: ctx['param_len'], Byte('cmd_params')),
 	)
