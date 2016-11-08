@@ -13,9 +13,14 @@ cmd_opcode = Enum(ULInt16('cmd_opcode'),
 
 	# Link Control commands
 	inquiry				= opcode_encode(0x01, 0x0001),
+	disconnect			= opcode_encode(0x01, 0x0006),
 
 	# Controller & Baseband Commands
 	reset				= opcode_encode(0x03, 0x0003),
+	host_buffer_size		= opcode_encode(0x03, 0x0033),
+
+	# Informational Parameters
+	read_buffer_size		= opcode_encode(0x04, 0x0005),
 
 	# Vendor Specific Commands
 	vst_set_power_management	= opcode_encode(0x3f, 0x0202),
@@ -69,12 +74,46 @@ def inquiry_cmd_container(_lap, _inquiry_length, _num_responses):
 #
 
 #
+# disconnect command.
+#
+disconnect_cmd_struct = Struct('disconnect_cmd',
+	OneOf(ULInt16('connection_handle'), range(0x0000, 0x0EFF + 1)),
+	OneOf(Byte('reason'), range(256)),
+)
+#
+# disconnect command End.
+#
+
+
+#
 # Reset command.
 #
 def reset_cmd_container():
 	return cmd_container('reset')
 #
 # Reset command End.
+#
+
+#
+# Host Buffer Size Command.
+#
+host_buffer_size_cmd_struct = Struct('host_buffer_size_cmd',
+	OneOf(ULInt16('HC_ACL_Data_Packet_Length'), range(65536)),
+	OneOf(Byte('HC_Synchronous_Data_Packet_Length'), range(256)),
+	OneOf(ULInt16('HC_Total_Num_ACL_Data_Packets'), range(65536)),
+	OneOf(ULInt16('HC_Total_Num_Synchronous_Data_Packets'), range(65536)),
+)
+#
+# Host Buffer Size Command End.
+#
+
+#
+# Read Buffer Size Command.
+#
+def read_buffer_size_cmd_container():
+	return cmd_container('read_buffer_size')
+#
+# Read Buffer Size Command End.
 #
 
 #
@@ -94,8 +133,8 @@ le_set_random_address_cmd_struct = Struct('le_set_random_address_cmd',
 # eg. 01 06 20 0f 40 06 80 07 05 00 00 00 00 00 00 00 00 07 00
 #
 le_set_advertising_parameters_cmd_struct = Struct('le_set_advertising_parameters_cmd',
-	OneOf(ULInt16('advertising_interval_min'), range(0x0020, 0x40000 + 1)),
-	OneOf(ULInt16('advertising_interval_max'), range(0x0020, 0x40000 + 1)),
+	OneOf(ULInt16('advertising_interval_min'), range(0x0020, 0x4000 + 1)),
+	OneOf(ULInt16('advertising_interval_max'), range(0x0020, 0x4000 + 1)),
 	le_advertising_type,
 	le_own_address_type,
 	le_peer_address_type,
@@ -147,8 +186,8 @@ le_set_advertise_enable_cmd_struct = Struct('le_set_advertise_enable_cmd',
 #
 le_set_scan_parameters_cmd_struct = Struct('le_set_scan_parameters_cmd',
 	le_scan_type,
-	OneOf(ULInt16('scan_interval'), range(0x0004, 0x40000 + 1)),
-	OneOf(ULInt16('scan_window'), range(0x0004, 0x40000 + 1)),
+	OneOf(ULInt16('scan_interval'), range(0x0004, 0x4000 + 1)),
+	OneOf(ULInt16('scan_window'), range(0x0004, 0x4000 + 1)),
 	le_own_address_type,
 	OneOf(Byte('scanning_filter_policy'), range(0x0, 0x4 + 1)),
 )
@@ -179,6 +218,8 @@ hci_cmd_struct = Struct('hci_cmd',
 	Switch('cmd_params', lambda ctx: ctx['cmd_opcode'],
 		{
 			'inquiry': inquiry_cmd_struct,
+			'disconnect': disconnect_cmd_struct,
+			'host_buffer_size': host_buffer_size_cmd_struct,
 			'le_set_random_address': le_set_random_address_cmd_struct,
 			'le_set_advertising_parameters': le_set_advertising_parameters_cmd_struct,
 			'le_set_advertising_data': le_set_advertising_data_cmd_struct,

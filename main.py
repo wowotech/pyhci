@@ -16,6 +16,11 @@ def test_code():
 	print('reset')
 	print(ret.encode('hex'))
 
+	cmd = read_buffer_size_cmd_container()
+	ret = build(cmd)
+	print('read_buffer_size')
+	print(ret.encode('hex'))
+
 	cmd = inquiry_cmd_container(0x123456, 0x7, 0x8)
 	ret = build(cmd)
 	print('inquiry')
